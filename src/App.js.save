@@ -1,0 +1,127 @@
+// App.js
+
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button, PermissionsAndroid, Platform } from 'react-native';
+import BleManager from 'react-native-ble-manager';
+
+const App = () => {
+  const [isScanning, setIsScanning] = useState(false);
+  const [device, setDevice] = useState(null);
+  const [connected, setConnected] = useState(false);
+  const [deviceName, setDeviceName] = useState('');
+  const [batteryLevel, setBatteryLevel] = useState(null);
+
+  useEffect(() => {
+    // Request permissions for Android
+    if (Platform.OS === 'android') {
+      PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      ).then(() => {
+        BleManager.start({ showAlert: false }); // Initialize BleManager
+      });
+    } else {
+      BleManager.start({ showAlert: false }); // Initialize BleManager
+    }
+
+    // Clean up when the component is unmounted
+    return () => {
+      BleManager.stopScan();
+      BleManager.disconnect(device?.id);
+    };
+  }, [device]);
+
+  const startScan = () => {
+    if (isScanning) return;
+
+    setIsScanning(true);
+    BleManager.scan([], 5, true); // Scan for 5 seconds with duplicate devices allowed
+
+    BleManager.on('BleManagerDiscoverPeripheral', (peripheral) => {
+      if (peripheral.name) {
+        console.log('Discovered peripheral:', peripheral);
+        setDevice(peripheral);
+        setDeviceName(peripheral.name);
+      }
+    });
+
+    setTimeout(() => {
+      setIsScanning(false); // Stop scanning after 5 seconds
+    }, 5000);
+  };
+
+  const connectToDevice = () => {
+    if (!device) return;
+
+    BleManager.connect(device.id)
+      .then(() => {
+        console.log('Connected to device:', device.name);
+        setConnected(true);
+
+        // Optionally read the battery level or other characteristics
+        // For example, reading the battery level (if available)
+        readBatteryLevel();
+      })
+      .catch((error) => {
+        console.log('Connection error:', error);
+        setConnected(false);
+      });
+  };
+
+  const disconnectDevice = () => {
+    if (!device) return;
+
+    BleManager.disconnect(device.id)
+      .then(() => {
+        console.log('Disconnected from device:', device.name);
+        setConnected(false);
+      })
+      .catch((error) => {
+        console.log('Disconnection error:', error);
+      });
+  };
+
+  const readBatteryLevel = () => {
+    if (!device) return;
+
+    // Example of reading battery level (change to actual characteristic UUID)
+    BleManager.read(device.id, 'battery_service', 'battery_level')
+      .then((batteryData) => {
+        const battery = batteryData[0]; // Battery level is a single byte
+        setBatteryLevel(battery);
+        console.log('Battery level:', battery);
+      })
+      .catch((error) => {
+        console.log('Error reading battery level:', error);
+      });
+  };
+
+  return (
+    <View style={{ padding: 20 }}>
+      <Text>React Native BLE Example</Text>
+
+      <Text>Device Name: {deviceName || 'None'}</Text>
+
+      {!device && !isScanning ? (
+        <Button title="Start Scanning" onPress={startScan} />
+      ) : null}
+
+      {device && !connected ? (
+        <Button title="Connect to Device" onPress={connectToDevice} />
+      ) : null}
+
+      {connected ? (
+        <>
+          <Text>Connected to {deviceName}</Text>
+          {batteryLevel !== null && (
+            <Text>Battery Level: {batteryLevel}%</Text>
+          )}
+          <Button title="Disconnect" onPress={disconnectDevice} />
+        </>
+      ) : null}
+
+      {isScanning && <Text>Scanning...</Text>}
+    </View>
+  );
+};
+
+export default App;
