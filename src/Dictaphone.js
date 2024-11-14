@@ -1,5 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import App from './App'
+
 
 const Dictaphone = () => {
   const {
@@ -27,7 +29,7 @@ const Dictaphone = () => {
      .catch(error => console.error(error));
   };**/
   // Effect that runs when `transcript` changes
-  useEffect(() => {
+  /**useEffect(() => {
     if (transcript) {
       const postData = async () => {
         try {
@@ -53,7 +55,7 @@ const Dictaphone = () => {
       // Send the post request every time transcript changes
       postData();
     }
-  }, [transcript]); 
+  }, [transcript]); **/
 
   if (!browserSupportsSpeechRecognition) {
     return <span>Browser doesn't support speech recognition.</span>;
@@ -65,6 +67,7 @@ const Dictaphone = () => {
       <button onClick={SpeechRecognition.startListening}>Start</button>
       <button onClick={SpeechRecognition.stopListening}>Stop</button>
       <button onClick={resetTranscript}>Reset</button>
+      <App transcript = {transcript} />
       <p>{transcript}</p>
     </div>
   );

@@ -62,12 +62,14 @@ const App = () => {
   );
 };
 export default App;**/
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-function App() {
+
+function App({transcript}) {
   const [device, setDevice] = useState(null);
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState('');
+
 
   // Request a Bluetooth device and connect to it
   const requestDevice = async () => {
@@ -108,6 +110,32 @@ function App() {
       setDevice(null);
     }
   };
+
+  // Write a value to the characteristic
+async function writeToCharacteristic(characteristic, value) {
+  try {
+    await characteristic.writeValue(value);
+    console.log('Successfully wrote value to characteristic:', value);
+  } catch (error) {
+    console.error('Error writing value:', error);
+  }
+}
+
+  const TranscriptHandler = ( transcript ) => {
+    // Method to be executed whenever the transcript changes
+    const handleTranscriptChange = (newTranscript) => {
+      console.log('New transcript received:', newTranscript);
+      writeToCharacteristic("abcd1234-abcd-abcd-abcd-abcd1234abcd", transcript)
+      // Your custom logic here (e.g., update a UI, make an API call)
+    };
+  
+    // useEffect to monitor changes in transcript
+    useEffect(() => {
+      if (transcript) {
+        handleTranscriptChange(transcript);  // Call the method whenever transcript changes
+      }
+    }, [transcript]);
+  }
 
   return (
     <div className="App">

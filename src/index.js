@@ -1,10 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Dictaphone from './Dictaphone';
 import App from './App'
-// @flow
 
 /**export const manager = new BleManager() 
 const deviceId = "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
@@ -59,7 +58,7 @@ function scan () {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <Dictaphone />
   </React.StrictMode>
 );
 
