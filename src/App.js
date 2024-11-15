@@ -14,7 +14,9 @@ function App({transcript}) {
     try {
       // Request a device that supports the battery service (you can adjust the service filter if needed)
       const selectedDevice = await navigator.bluetooth.requestDevice({
-        acceptAllDevices: true,
+        //acceptAllDevices: true,
+        filters: [{services: [ "12345678-1234-1234-1234-123456789abc"]}],
+
         optionalServices: ['12345678-1234-1234-1234-123456789abc']
 
       });
