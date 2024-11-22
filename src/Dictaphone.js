@@ -40,8 +40,8 @@ const Dictaphone = () => {
   return (
     <div>
       <p>Microphone: {listening ? 'on' : 'off'}</p>
-      <button onClick={handleStart}>Start</button>
-      <button onClick={handleStop}>Stop</button>
+      <button onClick={() =>SpeechRecognition.startListening({ continuous: true })}>Start</button>
+      <button onClick={SpeechRecognition.stopListening}>Stop</button>
       <button onClick={resetTranscript}>Reset</button>
       <App transcript = {transcript} />
       <p>{transcript}</p>
