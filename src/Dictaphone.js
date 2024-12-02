@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState} from 'react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-import App from './App'
-
-
+import App from './App';
 
 const Dictaphone = () => {
   const {
@@ -13,12 +11,12 @@ const Dictaphone = () => {
   } = useSpeechRecognition();
 
   const [keepListening, setListening] = useState(null);
-  
+
   useEffect(() => {
-    if(keepListening === true){
-      SpeechRecognition.startListening();
+    if (listening) {
+      SpeechRecognition.startListening({ continuous: true});
     }
-}, [listening, keepListening]);
+  }, [listening]);
 
   if (!browserSupportsSpeechRecognition) {
     return <span>Browser doesn't support speech recognition.</span>;
@@ -26,16 +24,14 @@ const Dictaphone = () => {
 
   const handleStart = () => {
     setListening(true);
-    SpeechRecognition.startListening();
+    SpeechRecognition.startListening({ continuous: true});
   };
 
   const handleStop = () => {
-    setListening(false);
     SpeechRecognition.stopListening();
-  }; 
+  };
 
-
-//      <button onClick={() =>SpeechRecognition.startListening({ continuous: true })}>Start</button>
+  const last50words = transcript.split(' ').slice(-50).join(' ');
 
   return (
     <div>
@@ -43,9 +39,10 @@ const Dictaphone = () => {
       <button onClick={handleStart}>Start</button>
       <button onClick={handleStop}>Stop</button>
       <button onClick={resetTranscript}>Reset</button>
-      <App transcript = {transcript} />
-      <p>{transcript}</p>
+      <App transcript={transcript} />
+      <p>{last50words}</p>
     </div>
   );
 };
+
 export default Dictaphone;
