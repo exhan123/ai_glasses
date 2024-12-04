@@ -1,3 +1,5 @@
+React App that uses built in browser Web Speech API to transcribe auditory input to text in real time. Connects to an ESP32 display over BLE to send a copy of the transcript each time it changes.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
